@@ -1,2 +1,2 @@
-# Woodpecker_PWN_CAN_GTW
-PWN signal to CAN gateway
+# Woodpecker_PWM_CAN_GTW
+PWM signal to CAN gateway
