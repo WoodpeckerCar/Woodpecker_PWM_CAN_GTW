@@ -11,6 +11,7 @@ int ch3;
 int ch4;
 int ch5;
 int ch6;
+int ch7;
 
 unsigned char stmp[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -124,29 +125,34 @@ void setup() {
     }
     Serial.println("CAN BUS Shield init ok!");
 
+  pinMode(0, INPUT); 
+  pinMode(19, INPUT); 
   pinMode(3, INPUT); 
   pinMode(4, INPUT);
   pinMode(5, INPUT);
   pinMode(6, INPUT);
-  pinMode(0, INPUT); 
-  pinMode(12, INPUT);
+  pinMode(7, INPUT);
 
-  pinMode(2,OUTPUT);
-  digitalWrite(2,LOW);
-  pinMode(7,OUTPUT);
-  digitalWrite(7,LOW);
-//  pinMode(8,OUTPUT);
- // digitalWrite(8,LOW);
+  pinMode(A0,OUTPUT);
+  digitalWrite(A0,LOW);
+  pinMode(A1,OUTPUT);
+  digitalWrite(A1,LOW);
+  pinMode(A2,OUTPUT);
+  digitalWrite(A2,LOW);
+  pinMode(A3,OUTPUT);
+  digitalWrite(A3,LOW);
 
 }
 
 void loop() {
+  
+  ch5 = pulseIn(0, HIGH, 30000); // Switch1 SF - Power ON/OFF
+  ch7 = pulseIn(19, HIGH, 30000); // Switch1 SA - Ignition ON/OFF
   ch1 = pulseIn(3, HIGH, 30000); // Steering 
   ch2 = pulseIn(4, HIGH, 30000); // Acceleration
   ch3 = pulseIn(5, HIGH, 30000); // Steering2
   ch4 = pulseIn(6, HIGH, 30000); // Throttle Enable /Disable
-  ch5 = pulseIn(0, HIGH, 30000); // Switch1 SF - Power ON/OFF
-  ch6 = pulseIn(12, HIGH, 30000); // Switch2 SG - Forward Reverse switch
+  ch6 = pulseIn(7, HIGH, 30000); // Switch2 SG - Forward Reverse switch
 
 //  Serial.print("Steering: "); 
 //  Serial.print(ch1);        // Steering
@@ -159,8 +165,8 @@ void loop() {
 //  Serial.print(ch4); 
 //  Serial.print("| SW1: "); 
 //  Serial.print(ch5); 
-//  Serial.print("| SW2: "); 
-//  Serial.println(ch6); 
+//  Serial.print("| SW3: "); 
+//  Serial.println(ch7); 
 
  
   if (ch4 > 980 && ch4 < 1105) {CAN.sendMsgBuf(0x053, 1, 8, thrdisabl);Serial.println("Thr_Disable");};
@@ -300,29 +306,38 @@ if (ch2 > 1958 && ch2 < 1979){ CAN.sendMsgBuf(0x062, 1, 8, accel45);Serial.print
 if (ch2 > 1980 && ch2 < 2100){ CAN.sendMsgBuf(0x062, 1, 8, accel46);Serial.println("TH46");};
 
         if ((ch5 >=1950) && (ch5<= 2050)){
-          digitalWrite(2,HIGH);
+          digitalWrite(A0,HIGH);
          Serial.println("CH5 Power ON");
               } 
          else {
-            digitalWrite(7,LOW);
+            digitalWrite(A0,LOW);
            Serial.println("CH5 Power OFF");
                }
+
+         if ((ch7 >=1950) && (ch7<= 2050)){
+          digitalWrite(A3,HIGH);
+         Serial.println("CH7 Power ON");
+              } 
+         else {
+            digitalWrite(A3,LOW);
+           Serial.println("CH7 Power OFF");
+               }      
           
           if ((ch6 >=950) && (ch6<= 1000)){
-         digitalWrite(2,HIGH);
+         digitalWrite(A1,HIGH);
           Serial.println("CH6 Forward ON");
               } 
           else if ((ch6 >=1950) && (ch6<= 2050)){
-         digitalWrite(7,HIGH);
+         digitalWrite(A2,HIGH);
          Serial.println("CH6 Reverse ON");
                }     
          else {
-            digitalWrite(2,LOW);
-            digitalWrite(7,LOW);
+            digitalWrite(A1,LOW);
+            digitalWrite(A2,LOW);
            Serial.println("CH6 FW/REW OFF");
               }
 
 
-    delay(20);                       // send data per 20ms
+    delay(50);                       // send data per 20ms
   
 }
