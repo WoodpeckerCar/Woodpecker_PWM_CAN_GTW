@@ -12,6 +12,7 @@ int ch4;
 int ch5;
 int ch6;
 int ch7;
+int ch8;
 
 unsigned char stmp[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -112,6 +113,30 @@ unsigned char accel44[8] = {0x05, 0xCC, 0x12, 0x0D, 0xC0, 0x12, 0x00, 0x00};
 unsigned char accel45[8] = {0x05, 0xCC, 0x13, 0x0D, 0x24, 0x13, 0x00, 0x00};
 unsigned char accel46[8] = {0x05, 0xCC, 0x14, 0x0D, 0x88, 0x13, 0x00, 0x00};
 
+//Brakes
+unsigned char brake1[8] = {0x05, 0xCC, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake2[8] = {0x05, 0xCC, 0x3D, 0x0A, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake3[8] = {0x05, 0xCC, 0x7A, 0x14, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake4[8] = {0x05, 0xCC, 0xB7, 0x1E, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake5[8] = {0x05, 0xCC, 0xF4, 0x28, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake6[8] = {0x05, 0xCC, 0x31, 0x33, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake7[8] = {0x05, 0xCC, 0x6E, 0x3D, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake8[8] = {0x05, 0xCC, 0xAB, 0x47, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake9[8] = {0x05, 0xCC, 0xE8, 0x51, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake10[8] = {0x05, 0xCC, 0x25, 0x5C, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake11[8] = {0x05, 0xCC, 0x62, 0x66, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake12[8] = {0x05, 0xCC, 0x9F, 0x70, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake13[8] = {0x05, 0xCC, 0xDC, 0x7A, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake14[8] = {0x05, 0xCC, 0x19, 0x85, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake15[8] = {0x05, 0xCC, 0x56, 0x8F, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake16[8] = {0x05, 0xCC, 0x93, 0x99, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake17[8] = {0x05, 0xCC, 0xD0, 0xA3, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake18[8] = {0x05, 0xCC, 0x0D, 0xAE, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake19[8] = {0x05, 0xCC, 0x4A, 0xB8, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake20[8] = {0x05, 0xCC, 0x87, 0xC2, 0x00, 0x00, 0x00, 0x00};
+unsigned char brake21[8] = {0x06, 0xCC, 0xC4, 0xCC, 0x00, 0x00, 0x00, 0x00};
+
+
 
 void setup() {
      Serial.begin(115200);
@@ -132,6 +157,7 @@ void setup() {
   pinMode(5, INPUT);
   pinMode(6, INPUT);
   pinMode(7, INPUT);
+  pinMode(18, INPUT); 
 
   pinMode(A0,OUTPUT);
   digitalWrite(A0,LOW);
@@ -151,8 +177,9 @@ void loop() {
   ch1 = pulseIn(3, HIGH, 30000); // Steering 
   ch2 = pulseIn(4, HIGH, 30000); // Acceleration
   ch3 = pulseIn(5, HIGH, 30000); // Steering2
-  ch4 = pulseIn(6, HIGH, 30000); // Throttle Enable /Disable
+  ch4 = pulseIn(6, HIGH, 30000); // Throttle and Brake Enable /Disable
   ch6 = pulseIn(7, HIGH, 30000); // Switch2 SG - Forward Reverse switch
+  ch8 = pulseIn(18, HIGH, 30000); // Brakes
 
 //  Serial.print("Steering: "); 
 //  Serial.print(ch1);        // Steering
@@ -163,17 +190,25 @@ void loop() {
 //  Serial.print(ch3); 
 //  Serial.print("| ThrottleEnable: "); 
 //  Serial.print(ch4); 
-//  Serial.print("| SW1: "); 
-//  Serial.print(ch5); 
+  Serial.print("| SW1: "); 
+  Serial.println(ch5); 
 //  Serial.print("| SW3: "); 
 //  Serial.println(ch7); 
+  Serial.print("Brakes: "); 
+  Serial.println(ch8);        // Brakes
 
  
-  if (ch4 > 980 && ch4 < 1105) {CAN.sendMsgBuf(0x053, 1, 8, thrdisabl);Serial.println("Thr_Disable");};
-  if (ch4 > 1900 && ch4 < 2100) {CAN.sendMsgBuf(0x052, 1, 8, threnable);Serial.println("Thr_Enable");};
+  if (ch4 > 980 && ch4 < 1105) {CAN.sendMsgBuf(0x053, 1, 8, thrdisabl);
+                                CAN.sendMsgBuf(0x051, 1, 8, threnable);
+                                Serial.println("Thr_&_Brk_Disable");
+                                };
+  if (ch4 > 1900 && ch4 < 2100) {CAN.sendMsgBuf(0x052, 1, 8, threnable);
+                                 CAN.sendMsgBuf(0x050, 1, 8, threnable);
+                                 Serial.println("Thr_&_Brk_Enable");
+                                };
  
-  // if (ch2 > 1463 && ch2 < 2043) CAN.sendMsgBuf(0x030, 0, 8, forward);
-//Serial.println("{UI|SET|Item.Text=trackbars, progress bars}");
+
+ 
   if (ch1 > 980 && ch1 < 1105) {CAN.sendMsgBuf(0x469, 0, 8, steern20);Serial.println(-20);};
   if (ch1 > 1106 && ch1 < 1125) {CAN.sendMsgBuf(0x469, 0, 8, steern19);Serial.println(-19);};
   if (ch1 > 1126 && ch1 < 1145) {CAN.sendMsgBuf(0x469, 0, 8, steern18);Serial.println(-18);};
@@ -304,6 +339,30 @@ if (ch2 > 1914 && ch2 < 1935){ CAN.sendMsgBuf(0x062, 1, 8, accel43);Serial.print
 if (ch2 > 1936 && ch2 < 1957){ CAN.sendMsgBuf(0x062, 1, 8, accel44);Serial.println("TH44");};
 if (ch2 > 1958 && ch2 < 1979){ CAN.sendMsgBuf(0x062, 1, 8, accel45);Serial.println("TH45");};
 if (ch2 > 1980 && ch2 < 2100){ CAN.sendMsgBuf(0x062, 1, 8, accel46);Serial.println("TH46");};
+
+if (ch8<1550 && ch8>1400){ CAN.sendMsgBuf(0x060, 1, 8, brake1);Serial.println("BR1");};
+if (ch8<1399 && ch8>1378){ CAN.sendMsgBuf(0x060, 1, 8, brake2);Serial.println("BR2");};
+if (ch8<1377 && ch8>1356){ CAN.sendMsgBuf(0x060, 1, 8, brake3);Serial.println("BR3");};
+if (ch8<1355 && ch8>1334){ CAN.sendMsgBuf(0x060, 1, 8, brake4);Serial.println("BR4");};
+if (ch8<1333 && ch8>1312){ CAN.sendMsgBuf(0x060, 1, 8, brake5);Serial.println("BR5");};
+if (ch8<1311 && ch8>1290){ CAN.sendMsgBuf(0x060, 1, 8, brake6);Serial.println("BR6");};
+if (ch8<1289 && ch8>1268){ CAN.sendMsgBuf(0x060, 1, 8, brake7);Serial.println("BR7");};
+if (ch8<1267 && ch8>1246){ CAN.sendMsgBuf(0x060, 1, 8, brake8);Serial.println("BR8");};
+if (ch8<1245 && ch8>1224){ CAN.sendMsgBuf(0x060, 1, 8, brake9);Serial.println("BR9");};
+if (ch8<1223 && ch8>1202){ CAN.sendMsgBuf(0x060, 1, 8, brake10);Serial.println("BR10");};
+if (ch8<1201 && ch8>1180){ CAN.sendMsgBuf(0x060, 1, 8, brake11);Serial.println("BR11");};
+if (ch8<1179 && ch8>1158){ CAN.sendMsgBuf(0x060, 1, 8, brake12);Serial.println("BR12");};
+if (ch8<1157 && ch8>1136){ CAN.sendMsgBuf(0x060, 1, 8, brake13);Serial.println("BR13");};
+if (ch8<1135 && ch8>1114){ CAN.sendMsgBuf(0x060, 1, 8, brake14);Serial.println("BR14");};
+if (ch8<1113 && ch8>1092){ CAN.sendMsgBuf(0x060, 1, 8, brake15);Serial.println("BR15");};
+if (ch8<1091 && ch8>1070){ CAN.sendMsgBuf(0x060, 1, 8, brake16);Serial.println("BR16");};
+if (ch8<1069 && ch8>1048){ CAN.sendMsgBuf(0x060, 1, 8, brake17);Serial.println("BR17");};
+if (ch8<1047 && ch8>1026){ CAN.sendMsgBuf(0x060, 1, 8, brake18);Serial.println("BR18");};
+if (ch8<1025 && ch8>1004){ CAN.sendMsgBuf(0x060, 1, 8, brake19);Serial.println("BR19");};
+if (ch8<1003 && ch8>982){ CAN.sendMsgBuf(0x060, 1, 8, brake20);Serial.println("BR20");};
+if (ch8<981 && ch8>980){ CAN.sendMsgBuf(0x060, 1, 8, brake21);Serial.println("BR21");};
+
+
 
         if ((ch5 >=1950) && (ch5<= 2050)){
           digitalWrite(A0,HIGH);
